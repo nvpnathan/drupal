@@ -1,0 +1,261 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: pks-galera-node1
+  namespace: web
+  labels:
+    app: pks-galera-node1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pks-galera-node1
+  template:
+    metadata:
+      labels:
+        tier: pks-galera
+        app: pks-galera-node1
+    spec:
+      containers:
+      - name: pks-galera-node1
+        image: idstudios/mariadb-galera:10.3
+        imagePullPolicy: Always
+        args: ["node", "pks-galera-seed,pks-galera-node2,pks-galera-node3"]
+        env:
+        - name: XTRABACKUP_PASSWORD
+          value: "Fender2000"
+        - name: NODE_ADDRESS
+          value: "eth0"
+        - name: HEALTHY_WHILE_BOOTING
+          value: "1"
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 120
+          periodSeconds: 10
+        ports:
+        - containerPort: 3306
+        - containerPort: 3309
+        - containerPort: 4444
+        - containerPort: 4567
+        - containerPort: 4567
+          protocol: UDP
+        - containerPort: 4568
+        - containerPort: 8080
+        - containerPort: 8081
+        volumeMounts:
+          - name: pks-galera-node1-volume
+            mountPath: "/var/lib/mysql"
+      volumes:
+      - name: pks-galera-node1-volume
+        persistentVolumeClaim:
+          claimName: pks-galera-node1-volume-claim
+---
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: pks-galera-node2
+  namespace: web
+  labels:
+    app: pks-galera-node2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pks-galera-node2
+  template:
+    metadata:
+      labels:
+        tier: pks-galera
+        app: pks-galera-node2
+    spec:
+      containers:
+      - name: pks-galera-node2
+        image: idstudios/mariadb-galera:10.3
+        imagePullPolicy: Always
+        args: ["node", "pks-galera-seed,pks-galera-node1,pks-galera-node3"]
+        env:
+        - name: XTRABACKUP_PASSWORD
+          value: "Fender2000"
+        - name: NODE_ADDRESS
+          value: "eth0"
+        - name: HEALTHY_WHILE_BOOTING
+          value: "1"
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 120
+          periodSeconds: 10
+        ports:
+        - containerPort: 3306
+        - containerPort: 3309
+        - containerPort: 4444
+        - containerPort: 4567
+        - containerPort: 4567
+          protocol: UDP
+        - containerPort: 4568
+        - containerPort: 8080
+        - containerPort: 8081
+        volumeMounts:
+          - name: pks-galera-node2-volume
+            mountPath: "/var/lib/mysql"
+      volumes:
+      - name: pks-galera-node2-volume
+        persistentVolumeClaim:
+          claimName: pks-galera-node2-volume-claim
+---
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: pks-galera-node3
+  namespace: web
+  labels:
+    app: pks-galera-node3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pks-galera-node3
+  template:
+    metadata:
+      labels:
+        tier: pks-galera
+        app: pks-galera-node3
+    spec:
+      volumes:
+      - name: pks-galera-node3-volume
+        persistentVolumeClaim:
+          claimName: pks-galera-node3-volume-claim
+
+      containers:
+      - name: pks-galera-node3
+        image: idstudios/mariadb-galera:10.3
+        imagePullPolicy: Always
+        args: ["node", "pks-galera-seed,pks-galera-node1,pks-galera-node2"]
+        env:
+        - name: XTRABACKUP_PASSWORD
+          value: "Fender2000"
+        - name: NODE_ADDRESS
+          value: "eth0"
+        - name: HEALTHY_WHILE_BOOTING
+          value: "1"
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 120
+          periodSeconds: 10
+        ports:
+        - containerPort: 3306
+        - containerPort: 3309
+        - containerPort: 4444
+        - containerPort: 4567
+        - containerPort: 4567
+          protocol: UDP
+        - containerPort: 4568
+        - containerPort: 8080
+        - containerPort: 8081
+        volumeMounts:
+          - name: pks-galera-node3-volume
+            mountPath: "/var/lib/mysql"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pks-galera-node1
+  namespace: web
+spec:
+  ports:
+  - port: 3306
+    name: mysql
+    protocol: TCP
+  - port: 3309
+    name: socat
+    protocol: TCP
+  - port: 4444
+    name: galera4444
+    protocol: TCP
+  - port: 4567
+    name: galera4567
+    protocol: TCP
+  - port: 4567
+    name: galera4567udp
+    protocol: UDP
+  - port: 4568
+    name: galera4568
+    protocol: TCP
+  - port: 8080
+    name: galera8080
+    protocol: TCP
+  - port: 8081
+    name: galera8081
+    protocol: TCP
+  selector:
+    app: pks-galera-node1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pks-galera-node2
+  namespace: web
+spec:
+  ports:
+  - port: 3306
+    name: mysql
+    protocol: TCP
+  - port: 3309
+    name: socat
+    protocol: TCP
+  - port: 4444
+    name: galera4444
+    protocol: TCP
+  - port: 4567
+    name: galera4567
+    protocol: TCP
+  - port: 4567
+    name: galera4567udp
+    protocol: UDP
+  - port: 4568
+    name: galera4568
+    protocol: TCP
+  - port: 8080
+    name: galera8080
+    protocol: TCP
+  - port: 8081
+    name: galera8081
+    protocol: TCP
+  selector:
+    app: pks-galera-node2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pks-galera-node3
+  namespace: web
+spec:
+  ports:
+  - port: 3306
+    name: mysql
+    protocol: TCP
+  - port: 3309
+    name: socat
+    protocol: TCP
+  - port: 4444
+    name: galera4444
+    protocol: TCP
+  - port: 4567
+    name: galera4567
+    protocol: TCP
+  - port: 4567
+    name: galera4567udp
+    protocol: UDP
+  - port: 4568
+    name: galera4568
+    protocol: TCP
+  - port: 8080
+    name: galera8080
+    protocol: TCP
+  - port: 8081
+    name: galera8081
+    protocol: TCP
+  selector:
+    app: pks-galera-node3

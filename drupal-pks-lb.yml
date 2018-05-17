@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: drupal7-lb
+  namespace: web
+spec:
+  ports:
+  - port: 8000
+    targetPort: 80
+    protocol: TCP
+  selector:
+    app: drupal7-drupal
+  type: LoadBalancer

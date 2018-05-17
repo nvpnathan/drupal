@@ -1,0 +1,44 @@
+execution:
+- concurrency: 30
+  ramp-up: 5s
+  hold-for: 10m
+  iterations: 750
+  throughput: 30
+  scenario: moderate_load
+
+#modules:
+#  jmeter:
+#    properties:
+#      http.connection.stalecheck$Boolean: "true"
+#      httpclient4.retrycount: 1
+
+modules:
+  blazemeter:
+    token: d41e0a629347d3330001dff0:1561d1fed6d3574ce23fbeafafe898dece0a7687d93a025631e093ad8d4d3653941c3e75
+
+scenarios:
+  moderate_load:
+    retrieve-resources: false
+    requests:
+      - http://drupal.vballin.com:8000
+      - http://drupal.vballin.com:8000/?q=node/43
+      - http://drupal.vballin.com:8000/?q=node/42
+      - http://drupal.vballin.com:8000/?q=node/34
+      - http://drupal.vballin.com:8000/?q=node/39
+      - http://drupal.vballin.com:8000/?q=node/32
+      - http://drupal.vballin.com:8000/?q=node/28
+      - http://drupal.vballin.com:8000/?q=node/24
+      - http://drupal.vballin.com:8000/?q=node/20
+      - http://drupal.vballin.com:8000/?q=node/19
+      - http://drupal.vballin.com:8000/?q=node/12
+
+reporting:
+- module: console
+- module: final-stats
+- module: blazemeter
+
+settings:
+  check-interval: 10s
+  default-executor: jmeter
+
+provisioning: local
