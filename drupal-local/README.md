@@ -5,6 +5,7 @@
 `git clone https://github.com/ids/drupal-k8s.git`
 
 ### Copy the drupaldb_sample.sql to each mariadb pod
+`kubectl get pods`
 `kubectl cp drupal-k8s/data/drupaldb_sample.sql drupal-galera-*******:/var/lib/mysql/`
 
 - Repeat this for each galera pod
