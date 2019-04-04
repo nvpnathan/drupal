@@ -12,11 +12,13 @@
 
 ### Create the drupaldb database on each mariadb pod
 `kubectl exec -it drupal-galera-******`
-`mysql -pFender2000`
-`create database drupaldb;`
-`exit`
-`mysql -pFender2000 < /var/lib/mysql/drupaldb_sample.sql`
 
+```
+mysql -pFender2000
+create database drupaldb;
+exit
+mysql -pFender2000 < /var/lib/mysql/drupaldb_sample.sql
+````
 - Repeat this for each galera pod
 
 ### Test connectivity to the application
